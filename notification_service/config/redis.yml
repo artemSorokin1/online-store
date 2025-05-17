@@ -1,0 +1,3 @@
+host: "redis"
+port: "6379"
+chanel_name: "success_payment"

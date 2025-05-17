@@ -1,0 +1,1 @@
+CREATE INDEX brin_idx_event_time ON users USING brin (created_acc);

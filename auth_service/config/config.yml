@@ -1,0 +1,14 @@
+server:
+  env: "local"
+  token_ttl: 15m
+  grpc:
+    grpc_port: "8082"
+    grpc_timeout: 10m
+
+
+storage:
+  db_name: "auth"
+  port: "5432"
+  username: "root"
+  password: "123"
+  host: "auth_db"

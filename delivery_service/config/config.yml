@@ -1,0 +1,10 @@
+server:
+  PORT: "8083"
+
+storage:
+  DATABASE_NAME: "delivery"
+  DATABASE_PORT: "5432"
+  DATABASE_USERNAME: "root"
+  DATABASE_PASSWORD: "123"
+  DATABASE_HOST: "delivery_db"
+
