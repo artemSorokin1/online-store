@@ -13,8 +13,35 @@ services:
       - "5432:5432"
     volumes:
       - auth_postgres_data:/var/lib/postgresql/data
+      - ./auth_service/migrations:/docker-entrypoint-initdb.d
     networks:
       - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d auth"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # --- COMMENT DB ---
+  comment_db:
+    image: postgres:15
+    container_name: comment_db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: comments
+    ports:
+      - "5434:5432"
+    volumes:
+      - comment_postgres_data:/var/lib/postgresql/data
+      - ./comment_service/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d comments"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   # --- gRPC AUTH SERVER ---
   grpc_auth_server:
@@ -46,6 +73,11 @@ services:
       - delivery_postgres_data:/var/lib/postgresql/data
     networks:
       - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d delivery"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 #   --- REDIS ---
   redis:
@@ -84,6 +116,25 @@ services:
     networks:
       - backend
 
+  # --- COMMENT SERVER ---
+  comment_server:
+    build:
+      context: ./comment_service
+      dockerfile: Dockerfile
+    container_name: comment_server
+    depends_on:
+      - comment_db
+    ports:
+      - "8084:8084"
+    environment:
+      DB_HOST: comment_db
+      DB_PORT: 5432
+      DB_USER: root
+      DB_PASSWORD: 123
+      DB_NAME: comments
+    networks:
+      - backend
+
   notify:
     build:
       context: ./notification_service
@@ -103,6 +154,7 @@ services:
 volumes:
   auth_postgres_data:
   delivery_postgres_data:
+  comment_postgres_data:
   redis_data:
 
 networks:
