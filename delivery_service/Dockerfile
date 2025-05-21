@@ -22,5 +22,6 @@ FROM gcr.io/distroless/base-debian11
 WORKDIR /app
 COPY --from=builder /app/delivery_server .
 COPY --from=builder /app/config/config.yml ./config/
+COPY --from=builder /app/migrations ./migrations
 # Указываем команду для запуска
 CMD ["./delivery_server"]

@@ -1,1 +1,0 @@
-DROP INDEX IF EXISTS products_tsv_idx;

@@ -1,1 +1,0 @@
-CREATE INDEX IF NOT EXISTS products_tsv_idx ON products USING GIN (description_tsv);
