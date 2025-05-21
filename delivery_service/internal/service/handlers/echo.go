@@ -10,30 +10,34 @@ import (
 	"dlivery_service/delivery_service/pkg/inmem"
 	"encoding/json"
 	"fmt"
-	grpcauth "github.com/artemSorokin1/Auth-proto/protos/gen/protos/proto"
-	"github.com/labstack/echo/v4"
-	"github.com/lib/pq"
 	"io"
 	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
+
+	grpcauth "github.com/artemSorokin1/Auth-proto/protos/gen/protos/proto"
+	"github.com/labstack/echo/v4"
+	"github.com/lib/pq"
 )
 
 type Handler struct {
-	GRPCClient  *auth.GRPCAuthClient
-	DB          *storage.DB
-	redisClient *inmem.RedisClient
+	GRPCClient           *auth.GRPCAuthClient
+	DB                   *storage.DB
+	redisClientForCart   *inmem.RedisClientForCart
+	redisClientForNotify *inmem.RedisClientForNotify
 }
 
 func New(db *storage.DB) *Handler {
 	redisCfg := config.NewRedisConfig()
-	redisClient := inmem.NewRedisClient(redisCfg)
+	redisClientForNotify := inmem.NewRedisClientForNotify(redisCfg)
+	redisClientForCart := inmem.NewRedisClientForCart(redisCfg)
 
 	return &Handler{
-		GRPCClient:  auth.New(context.Background(), time.Second*1, 3),
-		DB:          db,
-		redisClient: redisClient,
+		GRPCClient:           auth.New(context.Background(), time.Second*1, 3),
+		DB:                   db,
+		redisClientForNotify: redisClientForNotify,
+		redisClientForCart:   redisClientForCart,
 	}
 }
 
@@ -123,10 +127,14 @@ func (h *Handler) GetCartHandler(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	fmt.Println("user id: ", userId)
-	cart, err := h.DB.GetCart(userId)
+
+	cart, err := h.redisClientForCart.GetCart(userId)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		slog.Info("error getting cart from redis: ", err.Error())
+		cart, err = h.DB.GetCart(userId)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
 	}
 
 	return c.JSON(http.StatusOK, cart)
@@ -219,7 +227,6 @@ func (h *Handler) CheckoutHandler(c echo.Context) error {
 	cardNumber := c.FormValue("cardNumber")
 	expDate := c.FormValue("expDate")
 
-	// Здесь будет ваша логика обработки оплаты
 	_ = cvv
 	_ = cardNumber
 	_ = expDate
@@ -293,7 +300,7 @@ func (h *Handler) CheckoutHandler(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 
-	go h.redisClient.Publish(user.Email)
+	go h.redisClientForNotify.Publish(user.Email)
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "Order created successfully", "order_id": fmt.Sprintf("%d", orderId)})
 }

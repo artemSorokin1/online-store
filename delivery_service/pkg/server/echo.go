@@ -6,10 +6,13 @@ import (
 	"dlivery_service/delivery_service/internal/repository/storage"
 	"dlivery_service/delivery_service/internal/service/handlers"
 	"dlivery_service/delivery_service/pkg/logger"
+	"dlivery_service/delivery_service/pkg/metrics"
 	"fmt"
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"net/http"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type EchoServer struct {
@@ -42,17 +45,38 @@ func (e *EchoServer) MustRun(cfg *config.Config) {
 }
 
 func (e *EchoServer) setHandlers() {
-	e.server.POST("/register", e.handler.RegisterUserHandler)
-	e.server.POST("/login", e.handler.LoginUserHandler)
-	e.server.POST("/logout", e.handler.LogoutUserHandler)
-	e.server.GET("/products", e.handler.GetProductsHandler)
-	e.server.GET("/products/:id", e.handler.GetProductByIdHandler)
-	e.server.GET("/cart", e.handler.GetCartHandler)
-	e.server.POST("/cart/add", e.handler.AddProductInCartHandler)
-	e.server.POST("/cart/delete-item", e.handler.DeleteCartItemHandler)
-	e.server.POST("/cart/clear", e.handler.DeleteCartHandler)
+	am := metrics.NewAuthMetrics()
+
+	auth := e.server.Group("/api/auth", echo.WrapMiddleware(am.Middleware))
+	{
+		auth.POST("/register", e.handler.RegisterUserHandler)
+		auth.POST("/login", e.handler.LoginUserHandler)
+		auth.POST("/logout", e.handler.LogoutUserHandler)
+	}
+
+	pm := metrics.NewProductsMetrics()
+	products := e.server.Group("/api/products", echo.WrapMiddleware(pm.Middleware))
+	{
+		products.GET("/", e.handler.GetProductsHandler)
+		products.GET("/:id", e.handler.GetProductByIdHandler)
+	}
+
+	cm := metrics.NewCartMetrics()
+	cart := e.server.Group("/api/cart", echo.WrapMiddleware(cm.Middleware))
+	{
+		cart.GET("/", e.handler.GetCartHandler)
+		cart.POST("/add", e.handler.AddProductInCartHandler)
+		cart.POST("/delete-item", e.handler.DeleteCartItemHandler)
+		cart.POST("/clear", e.handler.DeleteCartHandler)
+	}
+
+	admin := e.server.Group("/api/admin", e.handler.AdminMiddleware)
+	{
+		admin.POST("/products", e.handler.AdminAddProductHandler)
+		admin.DELETE("/products/:id", e.handler.AdminDeleteProductHandler)
+	}
+
 	e.server.POST("/checkout", e.handler.CheckoutHandler)
-	e.server.POST("/logout", e.handler.LogoutUserHandler)
-	e.server.POST("/admin/products", e.handler.AdminMiddleware(e.handler.AdminAddProductHandler))
-	e.server.DELETE("/admin/products/:id", e.handler.AdminMiddleware(e.handler.AdminDeleteProductHandler))
+
+	e.server.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 }

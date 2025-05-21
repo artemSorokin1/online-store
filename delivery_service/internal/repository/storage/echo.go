@@ -5,11 +5,15 @@ import (
 	"dlivery_service/delivery_service/internal/config"
 	"dlivery_service/delivery_service/internal/models"
 	"fmt"
+	"log"
+	"log/slog"
+
+	"github.com/golang-migrate/migrate"
+	"github.com/golang-migrate/migrate/database/postgres"
+	_ "github.com/golang-migrate/migrate/source/file"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
-	"log"
-	"log/slog"
 )
 
 // так надо
@@ -31,6 +35,23 @@ func New(config *config.Config) (*DB, error) {
 	if _, err := db.Conn(context.Background()); err != nil {
 		return nil, fmt.Errorf("unable to connect to db: %w", err)
 	}
+
+	driver, err := postgres.WithInstance(db.DB, &postgres.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://migrations",
+		"postgres", driver)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatal(err)
+	}
+
 	return &DB{Db: db}, nil
 }
 
