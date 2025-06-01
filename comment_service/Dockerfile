@@ -1,5 +1,5 @@
 # Базовый образ для сборки
-FROM golang:1.21 as builder
+FROM golang:1.21-alpine AS builder
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
@@ -8,18 +8,21 @@ WORKDIR /app
 COPY go.mod go.sum ./
 
 # Загружаем зависимости
-RUN go mod tidy
+RUN go mod download
 
 # Копируем все файлы проекта
 COPY . .
 
 # Собираем приложение
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o comment_server cmd/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd
 
-# Используем минималистичный образ для запуска
-FROM gcr.io/distroless/base-debian11
-WORKDIR /app
-COPY --from=builder /app/comment_server .
+FROM postgres:15-alpine
 
-# Указываем команду для запуска
-CMD ["./comment_server"]
+COPY --from=builder /app/main /app/main
+COPY --from=builder /app/scripts/init-db.sh /docker-entrypoint-initdb.d/
+
+RUN chmod +x /docker-entrypoint-initdb.d/init-db.sh
+
+EXPOSE 8084
+
+CMD ["./app/main"]
