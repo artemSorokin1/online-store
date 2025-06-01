@@ -280,6 +280,26 @@ services:
       - ./search_service/.env:/app/.env
       - ./search_service/config/elasticsearch.yaml:/app/config/elasticsearch.yaml
 
+  products_db:
+    image: postgres:15
+    container_name: products_db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: products
+    ports:
+      - "5435:5432"
+    volumes:
+      - products_postgres_data:/var/lib/postgresql/data
+      - ./products_service/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d products"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   auth_postgres_data:
   delivery_postgres_data:
@@ -289,6 +309,7 @@ volumes:
   grafanadata:
   logs:
   kafka_data:
+  products_postgres_data:
 
 networks:
   backend:
