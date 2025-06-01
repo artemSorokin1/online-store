@@ -1,12 +1,23 @@
 package main
 
 import (
-	"Web-shop/products_service/pkg/api"
 	"log"
+
+	"github.com/artemSorokin1/products-grpc-api/internal/db"
+	"github.com/artemSorokin1/products-grpc-api/internal/repository"
+	"github.com/artemSorokin1/products-grpc-api/pkg/api"
 )
 
 func main() {
-	if err := api.RunProductsServer(":50051"); err != nil {
-		log.Fatalf("Failed to start ProductsService: %v", err)
+	database, err := db.NewPostgresDB()
+	if err != nil {
+		log.Fatalf("Ошибка подключения к БД: %v", err)
+	}
+	defer database.Close()
+
+	repo := repository.NewProductRepository(database)
+
+	if err := api.RunProductsServer(":8081", repo); err != nil {
+		log.Fatalf("Ошибка запуска сервера: %v", err)
 	}
 }
