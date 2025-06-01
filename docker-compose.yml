@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # --- AUTH DB ---
   auth_db:
     image: postgres:15
     container_name: auth_db
@@ -22,7 +21,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # --- COMMENT DB ---
   comment_db:
     image: postgres:15
     container_name: comment_db
@@ -43,7 +41,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # --- gRPC AUTH SERVER ---
   grpc_auth_server:
     build:
       context: ./auth_service
@@ -55,11 +52,11 @@ services:
       - "8082:8082"
     env_file: ./auth_service/.env
     volumes:
+      - ./logs:/var/log/auth
       - ./auth_service/config/config.yml:/app/config/config.yml
     networks:
       - backend
 
-  # --- DELIVERY DB ---
   delivery_db:
     image: postgres:15
     container_name: delivery_db
@@ -71,6 +68,7 @@ services:
       - "5433:5432"
     volumes:
       - delivery_postgres_data:/var/lib/postgresql/data
+      - ./delivery_service/migrations:/docker-entrypoint-initdb.d
     networks:
       - backend
     healthcheck:
@@ -79,7 +77,6 @@ services:
       timeout: 5s
       retries: 5
 
-#   --- REDIS ---
   redis:
     image: redis:7
     container_name: redis_container
@@ -90,15 +87,16 @@ services:
     networks:
       - backend
 
-  # --- DELIVERY SERVER ---
   delivery_server:
     build:
       context: ./delivery_service
       dockerfile: Dockerfile
     container_name: delivery_server
     depends_on:
-      - delivery_db
-      - grpc_auth_server
+      delivery_db:
+        condition: service_healthy
+      grpc_auth_server:
+        condition: service_started
     ports:
       - "8083:8083"
     env_file:
@@ -110,13 +108,13 @@ services:
       DB_PASSWORD: 123
       DB_NAME: delivery
     volumes:
+      - ./logs:/var/log/app
       - ./delivery_service/config/redis.yml:/app/config/redis.yml
       - ./delivery_service/config/config.yml:/app/config/config.yml
       - ./delivery_service/.env:/app/.env
     networks:
       - backend
 
-  # --- COMMENT SERVER ---
   comment_server:
     build:
       context: ./comment_service
@@ -151,11 +149,146 @@ services:
     networks:
       - backend
 
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "9090:9090"
+    networks:
+      - backend
+    depends_on:
+      - grpc_auth_server
+      - delivery_server
+      - comment_server
+      - notify
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki-config.yaml:/etc/loki/local-config.yaml
+    networks:
+      - backend
+
+  fluent-bit:
+    image: fluent/fluent-bit:2.2
+    container_name: fluentbit
+    volumes:
+      - ./fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./fluent-bit/parsers.conf:/fluent-bit/etc/parsers.conf
+      - ./logs:/var/log/app:ro
+      - ./logs:/var/log/auth:ro
+    depends_on:
+      - loki
+    networks:
+      - backend
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/datasource.yaml:/etc/grafana/provisioning/datasource/datasource.yaml
+      - grafanadata:/var/lib/grafana
+    depends_on:
+      - prometheus
+      - loki
+    networks:
+      - backend
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    networks:
+      - backend
+    environment:
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_NODE_ID: "1"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_NUM_PARTITIONS: "1"
+      CLUSTER_ID: "_SZDFHXxRneR0oslRt14Sw"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - xpack.ml.enabled=false
+      - xpack.graph.enabled=false
+      - xpack.watcher.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - backend
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1g
+
+  search_service:
+    build:
+      context: ./search_service
+      dockerfile: Dockerfile
+    container_name: search_service
+    depends_on:
+      - kafka
+      - elasticsearch
+    ports:
+      - "8085:8085"
+    networks:
+      - backend
+    environment:
+      - KAFKA_BROKER=kafka:9092
+      - KAFKA_TOPIC=products
+      - KAFKA_GROUP_ID=search-indexer-group
+      - ES_URL=http://elasticsearch:9200
+    env_file:
+      - ./search_service/.env
+    volumes:
+      - ./search_service/.env:/app/.env
+      - ./search_service/config/elasticsearch.yaml:/app/config/elasticsearch.yaml
+
 volumes:
   auth_postgres_data:
   delivery_postgres_data:
   comment_postgres_data:
   redis_data:
+  prometheus_data:
+  grafanadata:
+  logs:
+  kafka_data:
 
 networks:
   backend:

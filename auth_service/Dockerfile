@@ -23,6 +23,7 @@ WORKDIR /app
 COPY --from=builder /app/grpc_auth_server .
 COPY --from=builder /app/config/config.yml ./config/
 COPY --from=builder /app/.env ./.env
+COPY --from=builder /app/migrations ./migrations
 
 # Указываем команду для запуска
 CMD ["./grpc_auth_server"]

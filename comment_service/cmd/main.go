@@ -6,15 +6,16 @@ import (
 	"comment_service/internal/repository"
 	"comment_service/internal/service"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"log"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func waitForDB(host string, port int) error {
@@ -87,4 +88,4 @@ func main() {
 	<-quit
 
 	log.Println("Shutting down server...")
-} 
+}

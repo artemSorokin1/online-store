@@ -1,3 +1,4 @@
 **/.env
 **/.idea/
 **/notify.yml
+auth_service/

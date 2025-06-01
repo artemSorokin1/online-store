@@ -1,48 +1,73 @@
 package logger
 
 import (
-	"context"
+	"fmt"
+	"os"
+	"strings"
+
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-const (
-	LoggerKey   = "logger"
-	RequestId   = "requestID"
-	ServiceName = "service"
-)
+func InitLogger(env string) (*zap.Logger, error) {
+	var level zapcore.Level
+	switch strings.ToLower(env) {
+	case "dev", "local":
+		level = zapcore.DebugLevel
+	case "prod":
+		level = zapcore.InfoLevel
+	default:
+		level = zapcore.InfoLevel
+	}
 
-type logger interface {
-	Info(ctx context.Context, msg string, fields ...zap.Field)
-	Error(ctx context.Context, msg string, fields ...zap.Field)
-}
-
-type Logger struct {
-	Logger      *zap.Logger
-	ServiceName string
-}
-
-func (l *Logger) Info(ctx context.Context, msg string, fields ...zap.Field) {
-	fields = append(fields, zap.String(ServiceName, l.ServiceName), zap.String(RequestId, ctx.Value(RequestId).(string)))
-	l.Logger.Info(msg, fields...)
-}
-
-func (l *Logger) Error(ctx context.Context, msg string, fields ...zap.Field) {
-	fields = append(fields, zap.String(ServiceName, l.ServiceName), zap.String(RequestId, ctx.Value(RequestId).(string)))
-	l.Logger.Error(msg, fields...)
-}
-
-func New(serviceName string) *Logger {
-	zapLogger, err := zap.NewProduction()
+	err := os.MkdirAll("/var/log/app", 0755)
 	if err != nil {
-		return nil
+		panic("cannot create log directory: " + err.Error())
 	}
-	defer zapLogger.Sync()
-	return &Logger{
-		Logger:      zapLogger,
-		ServiceName: serviceName,
-	}
-}
 
-func GetLoggerFromContext(ctx context.Context) *Logger {
-	return ctx.Value(LoggerKey).(*Logger)
+	// Конфигурация ротации логов через lumberjack
+	logFile := &lumberjack.Logger{
+		Filename:   "/var/log/app/app.log",
+		MaxSize:    10, // MB
+		MaxBackups: 5,  // количество архивов
+		MaxAge:     7,  // дней
+	}
+
+	// Конфигурация encoder'а
+	encoderCfg := zapcore.EncoderConfig{
+		TimeKey:      "time",
+		LevelKey:     "level",
+		MessageKey:   "msg",
+		CallerKey:    "caller",
+		EncodeTime:   zapcore.ISO8601TimeEncoder,
+		EncodeLevel:  zapcore.CapitalLevelEncoder,
+		EncodeCaller: zapcore.ShortCallerEncoder,
+	}
+
+	// Комбинируем sink + encoder + уровень логов
+	core := zapcore.NewCore(
+		zapcore.NewJSONEncoder(encoderCfg),
+		zapcore.AddSync(logFile),
+		level,
+	)
+
+	// Создаем логгер
+	logger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(level))
+
+	// Добавим service name из переменной окружения
+	serviceName := os.Getenv("SERVICE_NAME")
+	if serviceName != "" {
+		logger = logger.With(zap.String("service", serviceName))
+	}
+
+	fmt.Println("Logger initialized")
+	fileInfo, err := os.Stat("/var/log/app/app.log")
+	if err != nil {
+		fmt.Println("File not found:", err)
+	} else {
+		fmt.Println("File exists:", fileInfo.Name())
+	}
+
+	return logger, nil
 }

@@ -9,9 +9,10 @@ import (
 
 	//"auth_service/pkg/api"
 	"context"
+	"log/slog"
+
 	api "github.com/artemSorokin1/Auth-proto/protos/gen/protos/proto"
 	"golang.org/x/crypto/bcrypt"
-	"log/slog"
 )
 
 type AuthService struct {

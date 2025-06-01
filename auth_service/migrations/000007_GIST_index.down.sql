@@ -1,1 +1,0 @@
-DROP INDEX IF EXISTS brin_idx_event_time;

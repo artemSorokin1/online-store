@@ -5,7 +5,6 @@ import (
 	"dlivery_service/delivery_service/internal/config"
 	"dlivery_service/delivery_service/internal/repository/storage"
 	"dlivery_service/delivery_service/internal/service/handlers"
-	"dlivery_service/delivery_service/pkg/logger"
 	"dlivery_service/delivery_service/pkg/metrics"
 	"fmt"
 	"net/http"
@@ -13,35 +12,42 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.uber.org/zap"
 )
 
 type EchoServer struct {
-	log     *logger.Logger
+	logger  *zap.Logger
 	server  *echo.Echo
 	handler *handlers.Handler
 }
 
-func New(ctx context.Context, db *storage.DB) *EchoServer {
-	logg := logger.GetLoggerFromContext(ctx)
+func New(ctx context.Context, db *storage.DB, logger *zap.Logger) *EchoServer {
 	return &EchoServer{
-		log:     logg,
+		logger:  logger,
 		server:  echo.New(),
-		handler: handlers.New(db),
+		handler: handlers.New(logger, db),
 	}
 }
 
 func (e *EchoServer) MustRun(cfg *config.Config) {
+	e.logger.Info("starting server")
 	e.server.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
 	}))
+
+	e.logger.Debug("setting handlers")
 	e.setHandlers()
+	e.logger.Debug("handlers set")
+
 	err := e.server.Start(fmt.Sprintf("0.0.0.0:%s", cfg.ServerCfg.Port))
 	if err != nil {
-		panic(err)
+		e.logger.Fatal("failed to start server", zap.Error(err))
 	}
+
+	e.logger.Info("server started", zap.String("port", cfg.ServerCfg.Port))
 }
 
 func (e *EchoServer) setHandlers() {

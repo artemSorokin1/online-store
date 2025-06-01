@@ -1,1 +1,0 @@
-DROP INDEX IF EXISTS username_index;
