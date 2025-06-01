@@ -6,29 +6,29 @@ import (
 	"dlivery_service/delivery_service/internal/repository/storage"
 	"dlivery_service/delivery_service/pkg/logger"
 	"dlivery_service/delivery_service/pkg/server"
-	"github.com/labstack/gommon/log"
+	"log/slog"
 	"os"
 	"os/signal"
 )
 
-const (
-	ServiceName = "delivery_service"
-	CntUsers    = 5_000_000
-)
-
 func main() {
 	ctx := context.Background()
-	mainLogger := logger.New(ServiceName)
-	ctx = context.WithValue(ctx, logger.LoggerKey, mainLogger)
+
+	env := os.Getenv("ENV")
+
+	mainLogger, err := logger.InitLogger(env)
+	if err != nil {
+		slog.Error("failed to initialize logger", err)
+	}
 
 	cfg := config.New()
 
-	stor, err := storage.New(cfg)
+	stor, err := storage.New(cfg, mainLogger)
 	if err != nil {
 		panic(err)
 	}
 
-	serv := server.New(ctx, stor)
+	serv := server.New(ctx, stor, mainLogger)
 
 	go serv.MustRun(cfg)
 
@@ -37,6 +37,6 @@ func main() {
 
 	<-sigChan
 
-	log.Error("graceful shutdown")
+	mainLogger.Error("shutting down server")
 
 }

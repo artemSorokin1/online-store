@@ -2,31 +2,35 @@ package auth
 
 import (
 	"context"
-	"dlivery_service/delivery_service/pkg/logger"
-	grpcauth "github.com/artemSorokin1/Auth-proto/protos/gen/protos/proto"
-	"google.golang.org/grpc"
+	"os"
 	"time"
+
+	grpcauth "github.com/artemSorokin1/Auth-proto/protos/gen/protos/proto"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
-const AddressAuthGRPCServer = "grpc_auth_server:8082"
-
 type GRPCAuthClient struct {
-	Api grpcauth.AuthServiceClient
-	log *logger.Logger
+	Api    grpcauth.AuthServiceClient
+	logger *zap.Logger
 }
 
 func New(ctx context.Context,
+	logger *zap.Logger,
 	timeout time.Duration,
 	retriesCount int) *GRPCAuthClient {
-	cc, err := grpc.Dial(AddressAuthGRPCServer, grpc.WithInsecure())
+
+	grpcAddres := os.Getenv("GRPC_AUTH_ADDRESS")
+	cc, err := grpc.NewClient(grpcAddres, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log := logger.GetLoggerFromContext(ctx)
-		log.Error(ctx, "failed to create grpc client")
+		logger.Error("failed to create grpc client", zap.Error(err))
 		return nil
 	}
 
 	return &GRPCAuthClient{
-		Api: grpcauth.NewAuthServiceClient(cc),
+		Api:    grpcauth.NewAuthServiceClient(cc),
+		logger: logger,
 	}
 
 }

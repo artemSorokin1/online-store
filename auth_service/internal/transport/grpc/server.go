@@ -5,24 +5,27 @@ import (
 	"auth_service/internal/repositiry/storage"
 	"auth_service/pkg/storage/inmem"
 	"fmt"
-	api "github.com/artemSorokin1/Auth-proto/protos/gen/protos/proto"
-	"google.golang.org/grpc"
 	"log/slog"
 	"net"
+
+	api "github.com/artemSorokin1/Auth-proto/protos/gen/protos/proto"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
 
 type Server struct {
 	grpcServer *grpc.Server
 	listener   net.Listener
+	logger     *zap.Logger
 }
 
 // New создает связб между grpc сервером и реализацией его методов
-func New(config config.ServerConfig, s *storage.Storage) *Server {
+func New(config config.ServerConfig, s *storage.Storage, logger *zap.Logger) *Server {
 	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", config.GRPCPort))
 	if err != nil {
-		panic(err)
+		logger.Fatal("failed to listen", zap.Error(err))
 	}
-	fmt.Println(lis.Addr().String())
+
 	var opts []grpc.ServerOption
 
 	grpcServer := grpc.NewServer(opts...)
@@ -34,6 +37,7 @@ func New(config config.ServerConfig, s *storage.Storage) *Server {
 	return &Server{
 		grpcServer,
 		lis,
+		logger,
 	}
 }
 
@@ -41,12 +45,12 @@ func (s *Server) MustStart() {
 	slog.Info("grpc auth server start")
 	err := s.grpcServer.Serve(s.listener)
 	if err != nil {
-		panic(err)
+		s.logger.Fatal("failed to start grpc server", zap.Error(err))
 	}
 }
 
 func (s *Server) GracefulStop() {
-	slog.Info("stopping grpc auth server")
+	s.logger.Info("grpc auth server stopping")
 	s.grpcServer.GracefulStop()
-	slog.Info("grpc auth server stopped")
+	s.logger.Info("grpc auth server stopped")
 }

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2025-05-25T12:00:00.000Z" agent="5.0 (Windows)" etag="Jz1X2" version="14.6.13" type="device">
+  <diagram id="ecomArch" name="Architecture">
+    <mxGraphModel dx="1028" dy="586" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <!-- Client -->
+        <mxCell id="2" value="Client" style="rounded=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <!-- API Gateway -->
+        <mxCell id="3" value="API Gateway" style="rounded=1;fillColor=#E1D5E7;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="200" y="40" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <!-- Microservices Pool -->
+        <mxCell id="4" value="Microservices" style="rounded=1;fillColor=#DAE8FC;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="360" y="20" width="300" height="120" as="geometry"/>
+        </mxCell>
+        <!-- Product Service -->
+        <mxCell id="5" value="Product Service" style="rounded=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="4">
+          <mxGeometry x="20" y="20" width="120" height="40" as="geometry"/>
+        </mxCell>
+        <!-- Seller Service -->
+        <mxCell id="6" value="Seller Service" style="rounded=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="4">
+          <mxGeometry x="160" y="20" width="120" height="40" as="geometry"/>
+        </mxCell>
+        <!-- Comment Service -->
+        <mxCell id="7" value="Comment Service" style="rounded=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="4">
+          <mxGeometry x="20" y="70" width="120" height="40" as="geometry"/>
+        </mxCell>
+        <!-- Analytics Service -->
+        <mxCell id="8" value="Analytics Service" style="rounded=1;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="4">
+          <mxGeometry x="160" y="70" width="120" height="40" as="geometry"/>
+        </mxCell>
+        <!-- Kafka -->
+        <mxCell id="9" value="Kafka Cluster" style="ellipse;fillColor=#FFF2CC;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="360" y="160" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <!-- PostgreSQL -->
+        <mxCell id="10" value="PostgreSQL" style="shape=mxgraph.postgresql.postgresql;" vertex="1" parent="1">
+          <mxGeometry x="720" y="40" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <!-- Cassandra -->
+        <mxCell id="11" value="Cassandra" style="shape=mxgraph.cassandra.cassandra;" vertex="1" parent="1">
+          <mxGeometry x="720" y="120" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <!-- Elasticsearch -->
+        <mxCell id="12" value="Elasticsearch" style="shape=mxgraph.elastic.elasticsearch;" vertex="1" parent="1">
+          <mxGeometry x="720" y="200" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <!-- ClickHouse -->
+        <mxCell id="13" value="ClickHouse" style="shape=mxgraph.mongodb.mongo;" vertex="1" parent="1">
+          <mxGeometry x="720" y="280" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <!-- Redshift -->
+        <mxCell id="14" value="Redshift" style="shape=mxgraph.redshift.redshift;" vertex="1" parent="1">
+          <mxGeometry x="720" y="360" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <!-- S3 Storage -->
+        <mxCell id="15" value="S3 / HDFS" style="cylinder;fillColor=#D5E8D4;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="500" y="360" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <!-- Prometheus -->
+        <mxCell id="16" value="Prometheus" style="shape=mxgraph.prometheus.prometheus;" vertex="1" parent="1">
+          <mxGeometry x="40" y="200" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <!-- Grafana -->
+        <mxCell id="17" value="Grafana" style="shape=mxgraph.grafana.grafana;" vertex="1" parent="1">
+          <mxGeometry x="200" y="200" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <!-- Jaeger -->
+        <mxCell id="18" value="Jaeger" style="shape=mxgraph.jaeger.jaeger;" vertex="1" parent="1">
+          <mxGeometry x="360" y="260" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <!-- Edges -->
+        <mxCell id="19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="2" target="3" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="3" target="4" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="4" target="9" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="4" target="10" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="9" target="12" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="9" target="15" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="15" target="14" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="16" target="17" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="4" target="18" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

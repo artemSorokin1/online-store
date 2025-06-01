@@ -7,9 +7,15 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
+	"log/slog"
+
+	"github.com/golang-migrate/migrate"
+	"github.com/golang-migrate/migrate/database/postgres"
+	_ "github.com/golang-migrate/migrate/source/file"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"log/slog"
+	"go.uber.org/zap"
 )
 
 var (
@@ -18,10 +24,11 @@ var (
 )
 
 type Storage struct {
-	DB *sqlx.DB
+	DB     *sqlx.DB
+	logger *zap.Logger
 }
 
-func New(config *config.Config) (*Storage, error) {
+func New(config *config.Config, logger *zap.Logger) (*Storage, error) {
 	cfg := config.StorageCfg
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", cfg.Host, cfg.Username, cfg.Password, cfg.DBName, cfg.Port)
@@ -35,9 +42,29 @@ func New(config *config.Config) (*Storage, error) {
 		return nil, fmt.Errorf("unable to connect to db: %w", err)
 	}
 
-	slog.Info("storage run")
-	fmt.Println(dsn)
-	return &Storage{DB: db}, nil
+	logger.Info("connected to database")
+
+	driver, err := postgres.WithInstance(db.DB, &postgres.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://migrations",
+		"postgres", driver)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatal(err)
+	}
+
+	return &Storage{
+		DB:     db,
+		logger: logger,
+	}, nil
+
 }
 
 func (s *Storage) GetUserById(userId int64) (models.User, error) {
