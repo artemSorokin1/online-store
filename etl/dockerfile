@@ -1,0 +1,23 @@
+FROM python:3.9-slim
+
+# Установка Java 17
+RUN apt-get update && \
+    apt-get install -y wget && \
+    wget https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-aarch64_bin.tar.gz -O /tmp/openjdk.tar.gz && \
+    mkdir -p /usr/lib/jvm && \
+    tar xzf /tmp/openjdk.tar.gz -C /usr/lib/jvm && \
+    rm /tmp/openjdk.tar.gz && \
+    ln -s /usr/lib/jvm/jdk-17.0.2 /usr/lib/jvm/java-17-openjdk && \
+    apt-get remove -y wget && \
+    apt-get clean
+
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+WORKDIR /app
+COPY scripts/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["python", "scripts/spark_analytics.py"]
