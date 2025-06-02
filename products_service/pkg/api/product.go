@@ -41,8 +41,9 @@ func (s *server) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb
 		Info:        info,
 		CreatedAt:   timestamppb.Now(),
 		UpdatedAt:   timestamppb.Now(),
-		SellerId:    "123e4567-e89b-12d3-a456-426614174000",
+		SellerId:    "123e4567-e89b-12d3-a456-426614174001",
 		Comments:    []string{"gg", "ff", "hh"},
+		Tags:        []string{"тест", "товар", "продукт"},
 		Rating:      4.5,
 	}
 

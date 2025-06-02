@@ -35,7 +35,7 @@ func (s *HttpServer) setupRoutes() {
 func (s *HttpServer) MustRun() {
 	s.setupRoutes()
 
-	if err := http.ListenAndServe(s.cfg.Host+":"+s.cfg.Port, s.router); err != nil {
+	if err := http.ListenAndServe(":8086", s.router); err != nil {
 		panic("Failed to start HTTP server: " + err.Error())
 	}
 }

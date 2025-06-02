@@ -14,7 +14,7 @@ type ProductsClient struct {
 }
 
 func NewProductsClient() (*ProductsClient, error) {
-	conn, err := grpc.Dial(":50051", grpc.WithInsecure())
+	conn, err := grpc.Dial("products_service:50051", grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}

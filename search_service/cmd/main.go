@@ -64,17 +64,16 @@ func main() {
 		IdleTimeout:  120 * time.Second,
 	}
 
-	// 6. Горутина для graceful shutdown
 	shutdownCh := make(chan os.Signal, 1)
 	signal.Notify(shutdownCh, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-shutdownCh
 		log.Println("Shutting down HTTP server...")
 		server.Close()
-		cancel() // остановим Kafka-консьюмер
+		cancel()
 	}()
 
-	log.Println("HTTP server listening on :8080")
+	log.Println("HTTP server listening on :8085")
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("HTTP server error: %s", err)
 	}

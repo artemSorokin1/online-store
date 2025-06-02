@@ -20,20 +20,30 @@ func NewService(cfg *config.Config, repository *postgres.Storage) *Service {
 	return &Service{repository: repository, cfg: cfg}
 }
 
-func (s *Service) LoginUser(credentials dto.UserLoginCredentials) (string, string, error) {
-	user, err := s.repository.VerifyUserWithCredentials(credentials.Username, credentials.Password)
+func (s *Service) SearchSeller(username string) (*models.User, error) {
+	sellers, err := s.repository.SearchSellerByUsername(username)
+	if err != nil {
+		log.Println("Error searching sellers:", err)
+		return nil, fmt.Errorf("error searching sellers: %w", err)
+	}
+
+	return sellers, nil
+}
+
+func (s *Service) LoginSeller(credentials dto.UserLoginCredentials) (string, string, error) {
+	user, err := s.repository.VerifySellerWithCredentials(credentials.Username, credentials.Password)
 	if err != nil {
 		log.Println("Error verifying user with credentials:", err)
 		return "", "", err
 	}
 
-	accessToken, err := JWT.CreateAccessToken(user, s.cfg)
+	accessToken, err := JWT.CreateAccessTokenSeller(user, s.cfg)
 	if err != nil {
 		log.Println("Error creating access token:", err)
 		return "", "", err
 	}
 
-	refreshToken, err := JWT.CreateRefreshToken(user, s.cfg)
+	refreshToken, err := JWT.CreateRefreshTokenSeller(user, s.cfg)
 	if err != nil {
 		log.Println("Error creating refresh token:", err)
 		return "", "", err
@@ -43,8 +53,31 @@ func (s *Service) LoginUser(credentials dto.UserLoginCredentials) (string, strin
 	return accessToken, refreshToken, nil
 }
 
-func (s *Service) RegisterUser(credentials dto.UserRegistrationCredentials) error {
-	if isExists, err := s.repository.UserExists(credentials.Email, credentials.Username); isExists || err != nil {
+func (s *Service) LoginCustomer(credentials dto.UserLoginCredentials) (string, string, error) {
+	user, err := s.repository.VerifyCustomerWithCredentials(credentials.Username, credentials.Password)
+	if err != nil {
+		log.Println("Error verifying user with credentials:", err)
+		return "", "", err
+	}
+
+	accessToken, err := JWT.CreateAccessTokenCustomer(user, s.cfg)
+	if err != nil {
+		log.Println("Error creating access token:", err)
+		return "", "", err
+	}
+
+	refreshToken, err := JWT.CreateRefreshTokenCustomer(user, s.cfg)
+	if err != nil {
+		log.Println("Error creating refresh token:", err)
+		return "", "", err
+
+	}
+
+	return accessToken, refreshToken, nil
+}
+
+func (s *Service) RegisterSeller(credentials dto.UserRegistrationCredentials) error {
+	if isExists, err := s.repository.SellerExists(credentials.Email, credentials.Username); isExists || err != nil {
 		return fmt.Errorf("user with email or username already exists")
 	}
 
@@ -60,7 +93,7 @@ func (s *Service) RegisterUser(credentials dto.UserRegistrationCredentials) erro
 		PassHash: passHash,
 	}
 
-	_, err = s.repository.CreateUser(user)
+	_, err = s.repository.CreateSeller(user)
 	if err != nil {
 		log.Println("Error creating user:", err)
 		return err
@@ -69,12 +102,51 @@ func (s *Service) RegisterUser(credentials dto.UserRegistrationCredentials) erro
 	return nil
 }
 
-func (s *Service) RefreshAccessToken(refreshToken string, cfg *config.Config) (string, error) {
+func (s *Service) RegisterCustomer(credentials dto.UserRegistrationCredentials) error {
+	if isExists, err := s.repository.CustomerExists(credentials.Email, credentials.Username); isExists || err != nil {
+		return fmt.Errorf("user with email or username already exists")
+	}
+
+	passHash, err := hash.HashPassword(credentials.Password)
+	if err != nil {
+		log.Println("Error hashing password:", err)
+		return err
+	}
+
+	user := models.User{
+		Email:    credentials.Email,
+		Username: credentials.Username,
+		PassHash: passHash,
+	}
+
+	_, err = s.repository.CreateCustomer(user)
+	if err != nil {
+		log.Println("Error creating user:", err)
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) RefreshAccessTokenSeller(refreshToken string, cfg *config.Config) (string, error) {
 	if refreshToken == "" {
 		return "", fmt.Errorf("empty refresh token")
 	}
 
-	accessToken, err := JWT.RefreshToken(refreshToken, cfg)
+	accessToken, err := JWT.RefreshTokenSeller(refreshToken, cfg)
+	if err != nil {
+		return "", err
+	}
+
+	return accessToken, nil
+}
+
+func (s *Service) RefreshAccessTokenCustomer(refreshToken string, cfg *config.Config) (string, error) {
+	if refreshToken == "" {
+		return "", fmt.Errorf("empty refresh token")
+	}
+
+	accessToken, err := JWT.RefreshTokenCustomer(refreshToken, cfg)
 	if err != nil {
 		return "", err
 	}

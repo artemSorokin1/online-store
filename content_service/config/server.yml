@@ -1,2 +1,2 @@
-port: 8086
-host: localhost
+port: "8086"
+host: "localhost"

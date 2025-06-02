@@ -13,7 +13,7 @@ type SellersClient struct {
 }
 
 func NewSellersClient() (*SellersClient, error) {
-	conn, err := grpc.Dial(":50052", grpc.WithInsecure())
+	conn, err := grpc.Dial("auth_service:50052", grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}

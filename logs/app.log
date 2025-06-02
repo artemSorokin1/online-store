@@ -88,3 +88,111 @@
 {"level":"INFO","time":"2025-05-31T22:31:51.970Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
 {"level":"DEBUG","time":"2025-05-31T22:31:51.974Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
 {"level":"DEBUG","time":"2025-05-31T22:31:51.981Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-01T20:31:22.997Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-01T20:31:23.079Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-01T20:31:23.166Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-01T20:31:23.204Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-01T20:31:23.209Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-01T20:31:23.234Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:30:34.324Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:30:34.452Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:30:34.647Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:30:34.696Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T01:30:34.701Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T01:30:34.719Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:44:19.239Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:44:19.322Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:44:19.396Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:44:19.419Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T01:44:19.422Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T01:44:19.451Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:52:24.047Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:52:24.129Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:52:24.191Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:52:24.203Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T01:52:24.206Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T01:52:24.212Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:52:58.866Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:52:58.948Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:52:59.021Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:52:59.032Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T01:52:59.040Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T01:52:59.053Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:54:22.949Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:54:23.042Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:54:23.114Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:54:23.128Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T01:54:23.130Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T01:54:23.138Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:55:37.044Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:55:37.140Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:55:37.233Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T01:55:37.247Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T01:55:37.249Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T01:55:37.261Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:08:05.333Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:08:05.429Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:08:05.478Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:08:05.492Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:08:05.498Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:08:05.514Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:29:37.425Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:29:37.496Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:29:37.535Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:29:37.544Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:29:37.545Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:29:37.553Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:38:31.403Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:38:31.472Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:38:31.534Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:38:31.560Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:38:31.562Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:38:31.579Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:41:31.185Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:41:31.278Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:41:31.341Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:41:31.350Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:41:31.352Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:41:31.366Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:50:28.449Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:50:28.541Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:50:28.645Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:50:28.684Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:50:28.712Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:50:28.730Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:51:33.001Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:51:33.101Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:51:33.188Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:51:33.199Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:51:33.204Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:51:33.220Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:53:21.002Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:53:21.069Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:53:21.139Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:53:21.154Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:53:21.157Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:53:21.169Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:55:22.470Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:55:22.592Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:55:22.670Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:55:22.684Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:55:22.688Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:55:22.697Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:59:31.715Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:59:31.829Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:59:31.889Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T02:59:31.913Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:59:31.919Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T02:59:31.933Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T03:11:27.958Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T03:11:28.058Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T03:11:28.146Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T03:11:28.187Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T03:11:28.191Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T03:11:28.213Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T08:14:36.521Z","caller":"storage/echo.go:33","msg":"connecting to db","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T08:14:36.618Z","caller":"storage/echo.go:51","msg":"storage run","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T08:14:36.701Z","caller":"storage/echo.go:69","msg":"migrations successfully applied","service":"delivery_server"}
+{"level":"INFO","time":"2025-06-02T08:14:36.732Z","caller":"server/echo.go:33","msg":"starting server","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T08:14:36.741Z","caller":"server/echo.go:41","msg":"setting handlers","service":"delivery_server"}
+{"level":"DEBUG","time":"2025-06-02T08:14:36.759Z","caller":"server/echo.go:43","msg":"handlers set","service":"delivery_server"}

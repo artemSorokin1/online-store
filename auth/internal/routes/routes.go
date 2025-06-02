@@ -5,6 +5,7 @@ import (
 	"auth/internal/handlers"
 	"auth/internal/repository/postgres"
 	log "auth/pkg/logger"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 )
@@ -23,10 +24,14 @@ func SetupApp(cfg *config.Config) (*gin.Engine, *sqlx.DB, error) {
 	handler := handlers.NewHandler(cfg, db)
 	auth := router.Group("/api/auth")
 	{
-		auth.POST("/login", handler.SignIn)    // вход
-		auth.POST("/register", handler.SignUp) // регистрация
+		auth.POST("/login/seller", handler.SignInSeller)
+		auth.POST("/register/seller", handler.SignUpSeller)
+		auth.POST("/login/customer", handler.SignInCustomer)
+		auth.POST("/register/customer", handler.SignUpCustomer)
 		auth.POST("/logout", handler.Logout)
-		auth.POST("/refresh", handler.Refresh)
+		auth.POST("/refresh/customer", handler.RefreshCustomer)
+		auth.POST("/refresh/seller", handler.RefreshSeller)
+		auth.GET("search/seller", handler.SearchSeller)
 	}
 
 	return router, db.DB, nil

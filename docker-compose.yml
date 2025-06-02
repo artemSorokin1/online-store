@@ -12,7 +12,7 @@ services:
       - "5432:5432"
     volumes:
       - auth_postgres_data:/var/lib/postgresql/data
-      - ./auth_service/migrations:/docker-entrypoint-initdb.d
+      - ./auth/migrations:/docker-entrypoint-initdb.d
     networks:
       - backend
     healthcheck:
@@ -41,19 +41,22 @@ services:
       timeout: 5s
       retries: 5
 
-  grpc_auth_server:
+  auth_service:
     build:
-      context: ./auth_service
+      context: ./auth
       dockerfile: Dockerfile
-    container_name: grpc_auth_server
+    container_name: auth_service
     depends_on:
       - auth_db
     ports:
       - "8082:8082"
-    env_file: ./auth_service/.env
+      - "50052:50052"
+    env_file:
+      - ./auth/.env
     volumes:
       - ./logs:/var/log/auth
-      - ./auth_service/config/config.yml:/app/config/config.yml
+      - ./auth/config/config.yml:/app/config/config.yml
+      - ./auth/.env:/app/.env
     networks:
       - backend
 
@@ -95,7 +98,7 @@ services:
     depends_on:
       delivery_db:
         condition: service_healthy
-      grpc_auth_server:
+      auth_service:
         condition: service_started
     ports:
       - "8083:8083"
@@ -165,7 +168,7 @@ services:
     networks:
       - backend
     depends_on:
-      - grpc_auth_server
+      - auth_service
       - delivery_server
       - comment_server
       - notify
@@ -279,6 +282,37 @@ services:
     volumes:
       - ./search_service/.env:/app/.env
       - ./search_service/config/elasticsearch.yaml:/app/config/elasticsearch.yaml
+
+  content_service:
+    build:
+      context: ./content_service
+      dockerfile: Dockerfile
+    container_name: content_service
+    depends_on:
+      - auth_service
+    ports:
+      - "8086:8086"
+    env_file:
+      - ./content_service/.env
+    volumes:
+      - ./content_service/config/server.yml:/app/config/server.yml
+      - ./content_service/.env:/app/.env
+    networks:
+      - backend
+
+  products_service:
+    build:
+      context: ./products_service
+      dockerfile: Dockerfile
+    container_name: products_service
+    depends_on:
+      - search_service
+      - content_service
+    ports:
+      - "8087:8087"
+      - "50051:50051"
+    networks:
+      - backend
 
 volumes:
   auth_postgres_data:

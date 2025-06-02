@@ -27,13 +27,13 @@ func New(sellerClient *seller_client.SellersClient, producClient *product_client
 }
 
 func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
-	query := chi.URLParam(r, "query")
+	query := r.URL.Query().Get("query")
 	if query == "" {
 		http.Error(w, "missing query parameter", http.StatusBadRequest)
 		return
 	}
 
-	searchURL := fmt.Sprintf("http://search-service:8085/search?q=%s", url.QueryEscape(query))
+	searchURL := fmt.Sprintf("http://search_service:8085/search?q=%s", url.QueryEscape(query))
 
 	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
 	defer cancel()
@@ -56,13 +56,22 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var uuids []string
-	if err := json.NewDecoder(resp.Body).Decode(&uuids); err != nil {
+	var result struct {
+		ProductIDs []string `json:"product_ids"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		http.Error(w, "failed to decode search response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	response, err := h.GetInfoFromServices(uuids)
+	if len(result.ProductIDs) == 0 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("[]"))
+		return
+	}
+
+	response, err := h.GetInfoFromServices(result.ProductIDs)
 	if err != nil {
 		http.Error(w, "failed to get product info: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -114,6 +123,8 @@ func (h *Handler) GetInfoFromServices(uuids []string) ([]dto.ResponseDTO, error)
 			return []dto.ResponseDTO{}, fmt.Errorf("failed to get seller for product %s: %w", uuid, err)
 		}
 
+		fmt.Println("seller:", seller)
+
 		response = append(response, dto.ResponseDTO{
 			ProductID:          product.Id,
 			ProductName:        product.Name,
@@ -130,5 +141,7 @@ func (h *Handler) GetInfoFromServices(uuids []string) ([]dto.ResponseDTO, error)
 			SellerFullName:     seller.Fullname,
 		})
 	}
+
+	fmt.Println(response)
 	return response, nil
 }

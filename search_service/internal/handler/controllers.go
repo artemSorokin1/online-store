@@ -10,7 +10,6 @@ type SearchHandler struct {
 	service *service.ProductService
 }
 
-// NewSearchHandler создаёт SearchHandler
 func NewSearchHandler(svc *service.ProductService) *SearchHandler {
 	return &SearchHandler{service: svc}
 }

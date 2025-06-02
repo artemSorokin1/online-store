@@ -1,17 +1,14 @@
-CREATE TABLE customer (
-    id UUID PRIMARY KEY,
-    fullname VARCHAR(50),
-    passhash VARCHAR(50),
-    email VARCHAR(50),
-    phone VARCHAR(50),
-    city VARCHAR(50),
-    addres VARCHAR(50),
-    created_acc TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    fullname TEXT NOT NULL DEFAULT '',
+    username VARCHAR(100) UNIQUE NOT NULL,
+    passhash TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    phone VARCHAR(50) NOT NULL DEFAULT '',
+    city VARCHAR(100) NOT NULL DEFAULT '',
+    address TEXT NOT NULL DEFAULT '',
+    role VARCHAR(10) NOT NULL CHECK (role IN ('customer', 'seller')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE seller (
-    id UUID PRIMARY KEY,
-    phone VARCHAR(50),
-    email VARCHAR(50),
-    fullname VARCHAR(50)
-);
+CREATE INDEX IF NOT EXISTS user_seller_username_hash_idx ON users USING HASH (username) WHERE role = 'seller';
